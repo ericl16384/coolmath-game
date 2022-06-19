@@ -3,8 +3,12 @@
 ## Description
 options:
  - roguelike
-   - turn based
+   - turn-based
    - requires many items and enemies, and much balancing
+ - platformer
+ - tower defense
+ - puzzle
+ - aiming
 
 ## Responsibilities
 ### Eric
