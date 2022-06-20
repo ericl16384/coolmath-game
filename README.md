@@ -37,15 +37,15 @@ options:
 
 ## Resources
 ### HTML / Javascript
- - (Dungeon generator)[https://github.com/ericl16384/dungeon-generator]
+ - [Dungeon generator](https://github.com/ericl16384/dungeon-generator)
    - Tiled A* pathfinding
    - Delaunay triangulation
- - (Verlet physics)[https://github.com/ericl16384/verlet-physics]
+ - [Verlet physics](https://github.com/ericl16384/verlet-physics)
    - Circle-based physics (may be able to be more general with more time)
- - (Wheel simulation)[https://github.com/ericl16384/js-repls/tree/main/wheelSimulation]
+ - [Wheel simulation](https://github.com/ericl16384/js-repls/tree/main/wheelSimulation)
    - Friction
 ### Python / Pygame
- - (Pygame spaceship)[https://github.com/ericl16384/pygame-spaceship]
+ - [Pygame spaceship](https://github.com/ericl16384/pygame-spaceship)
    - Rigidbody physics (no collisions)
  - Bloons TD clone
    - I can't find, but I remember it was a pygame repl from a while back
