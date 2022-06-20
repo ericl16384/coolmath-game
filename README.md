@@ -8,6 +8,7 @@
 ### Elliott
  - design
  - art
+ - sound
  - game testing
  - balancing
 
