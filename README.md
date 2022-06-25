@@ -26,7 +26,7 @@ options:
    - point (no radius) bullets are easy
    - enemy pathfinding is easy with A*
    - aiming can either point at the player, or where he will be (long math, and I can't find the code I wrote for it :( )
- - tower defense
+ - **tower defense**
    - would be very easy to port to js, if I could find my BTD pygame project
    - if implemented on a grid, players could build a little base in a dungeon
  - puzzle
