@@ -35,6 +35,10 @@ options:
  - aiming
    - top down, such as mini golf
    - side view, such as basketball
+selected:
+ - tower defense
+   - players can add obstacles to the path, which the enemies will attack
+   - towers are placed on the path similarly
 
 ## Resources
 ### HTML / Javascript
