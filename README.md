@@ -42,6 +42,15 @@ selected:
    - players can add obstacles to the path, which the enemies will attack
    - towers are placed on the path similarly
 
+## TODO
+ - add enemies
+ - make objects destructable
+   - make walls not be map tiles
+ - add sprites
+ - add map generation
+   - resources
+   - forests
+
 ## Resources
 ### HTML / Javascript
  - [Dungeon generator](https://github.com/ericl16384/dungeon-generator)
