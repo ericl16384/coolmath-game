@@ -48,7 +48,7 @@ selected:
    - make walls not be map tiles
  - add sprites
  - add map generation
-   - resources
+   - 
    - forests
 
 ## Resources
