@@ -48,8 +48,8 @@ selected:
    - make walls not be map tiles
  - add sprites
  - add map generation
-   - 
    - forests
+   - stone
 
 ## Resources
 ### HTML / Javascript
