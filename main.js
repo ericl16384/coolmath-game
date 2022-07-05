@@ -1,14 +1,14 @@
 class CameraTransform {
     constructor() {
         this.offset = new Vector(0, 0);
-        //this.scale = 1
+        this.scale = 1
         //this.rotation = 0;
         //this.invertX = false;
         //this.invertY = false;
     }
 
     transform(v) {
-        return v.add(this.offset);
+        return v.mul(this.scale).add(this.offset);
     }
 }
 
@@ -31,14 +31,16 @@ class Map {
         for(let i=0; i<this.width; i++) {
             for(let j=0; j<this.height; j++) {
                 if(this.tiles[i][j] !== null) {
-                    var color = this.colors[map[i][j]];
+                    var color = this.colors[this.tiles[i][j]];
                     if(color === undefined) {
                         color = PURPLE;
                     }
-                    drawRectangle(ctx,
+                    drawPolygon(ctx, [
                         this.camera.transform(new Vector(i, j)).arr(),
-                        size,
-                    color, gridColor);
+                        this.camera.transform(new Vector(i+1, j)).arr(),
+                        this.camera.transform(new Vector(i+1, j+1)).arr(),
+                        this.camera.transform(new Vector(i, j+1)).arr()
+                    ], color, GREY);
                 }
             }
         }
@@ -62,6 +64,7 @@ class Tower {
 //var mapSize = [64, 32];
 
 var map = new Map(64, 32);
+map.camera.scale = 15;
 
 //var tileSize = 15;
 
