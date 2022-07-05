@@ -48,10 +48,16 @@ function lockPageScroll() {
     window.onscroll = function() {
         window.scrollTo(scrollLockX, scrollLockY);
     };
+
+
+    document.body.classList.add("stop-scrolling");
 }
 
 function unlockPageScroll() {
     window.onscroll = function() {};
+
+    
+    document.body.classList.remove("stop-scrolling");
 }
 
 
