@@ -1030,20 +1030,20 @@ function fillCanvas(ctx, canvas, fillColor) {
 
 // advanced canvas
 
-function drawMap(ctx, map, tileSize, tileColors={}, gridColor=GREY) {
-    var width = map.length;
-    var height = map[0].length;
-    var size = [tileSize, tileSize]
+//function drawMap(ctx, map, tileSize, tileColors={}, gridColor=GREY) {
+//    var width = map.length;
+//    var height = map[0].length;
+//    var size = [tileSize, tileSize]
 
-    for(let i=0; i<width; i++) {
-        for(let j=0; j<height; j++) {
-            if(map[i][j] !== null) {
-                var color = tileColors[map[i][j]];
-                if(color === null) {
-                    color = PURPLE;
-                }
-                drawRectangle(ctx, [i*tileSize, j*tileSize], size, color, gridColor);
-            }
-        }
-    }
-}
+//    for(let i=0; i<width; i++) {
+//        for(let j=0; j<height; j++) {
+//            if(map[i][j] !== null) {
+//                var color = tileColors[map[i][j]];
+//                if(color === null) {
+//                    color = PURPLE;
+//                }
+//                drawRectangle(ctx, [i*tileSize, j*tileSize], size, color, gridColor);
+//            }
+//        }
+//    }
+//}
