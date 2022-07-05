@@ -13,7 +13,9 @@
  - balancing
 
 ## Description
-options:
+A tower defense game, where you build a castle and defend it from enemies.
+
+Options we chose from:
  - roguelike
    - turn-based
    - requires many items and enemies, and much balancing
