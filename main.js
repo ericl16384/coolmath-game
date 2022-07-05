@@ -165,13 +165,19 @@ function mousePlaceBuilding() {
     }
 
     map.buildings.push(new Building(v, proto));
-    console.log(v);
     return true;
 }
 
 
 function draw() {
     map.draw(ctx);
+
+
+    // side panel
+
+    drawCircle(ctx, [0, 0], 100, WHITE, BLACK);
+    var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
+    drawCircle(ctx, [40, 40], 25, proto.color);
 }
 
 function update() {
@@ -199,3 +205,21 @@ function update() {
 function onMouseDown() {
     mousePlaceBuilding();
 }
+
+function onMouseWheel(change) {
+    if(change > 0) {
+        selectedBuildingPrototypeIndex++;
+    } else {
+        selectedBuildingPrototypeIndex--;
+    }
+    selectedBuildingPrototypeIndex = mod(selectedBuildingPrototypeIndex, buildingPrototypes.length);
+}
+
+
+
+
+
+
+
+
+lockPageScroll();

@@ -21,10 +21,14 @@ var sidePanel = document.getElementById("side-panel");
 
 var ticks = -1;
 
+var keysPressed = {};
+
 var mousePosition = new Vector(0, 0);
 var mousePressed = false;
 
-var keysPressed = {};
+// https://www.geeksforgeeks.org/how-to-disable-scrolling-temporarily-using-javascript/
+var scrollLockX = 0;
+var scrollLockY = 0;
 
 
 // global helpers
@@ -35,6 +39,19 @@ function updateMousePosition(event) {
         event.clientX - rect.left,
         event.clientY - rect.top
     );
+}
+
+function lockPageScroll() {
+    scrollLockX = window.pageXOffset || document.documentElement.scrollLeft,
+    scrollLockY = window.pageYOffset || document.documentElement.scrollTop;
+  
+    window.onscroll = function() {
+        window.scrollTo(scrollLockX, scrollLockY);
+    };
+}
+
+function unlockPageScroll() {
+    window.onscroll = function() {};
 }
 
 
@@ -55,6 +72,22 @@ setInterval(function() {
         update();
     }
 }, 1000/ticksPerSecond);
+
+var onKeyDown;
+document.addEventListener("keydown", function(event) {
+    keysPressed[event.code] = true;
+    if(onKeyDown !== undefined) {
+        onKeyDown();
+    }
+});
+
+var onKeyUp;
+document.addEventListener("keyup", function(event) {
+    keysPressed[event.code] = false;
+    if(onKeyUp !== undefined) {
+        onKeyUp();
+    }
+});
 
 var onMouseMove;
 document.addEventListener("mousemove", function(event) {
@@ -82,18 +115,9 @@ document.addEventListener("mouseup", function(event) {
     }
 });
 
-var onKeyDown;
-document.addEventListener("keydown", function(event) {
-    keysPressed[event.code] = true;
-    if(onKeyDown !== undefined) {
-        onKeyDown();
-    }
-});
-
-var onKeyUp;
-document.addEventListener("keyup", function(event) {
-    keysPressed[event.code] = false;
-    if(onKeyUp !== undefined) {
-        onKeyUp();
+var onMouseWheel;
+document.addEventListener("wheel", function(event) {
+    if(onMouseWheel !== undefined) {
+        onMouseWheel(event.deltaY);
     }
 });
