@@ -71,7 +71,7 @@ class Map {
                     if(color === undefined) {
                         color = PURPLE;
                     }
-                    
+
                     //drawPolygon(ctx, [
                     //    this.camera.transform(new Vector(x, y)).arr(),
                     //    this.camera.transform(new Vector(x+1, y)).arr(),
@@ -98,7 +98,7 @@ class Building {
     constructor(position) {
         this.position = position;
 
-        this.radius = 0.4;
+        this.radius = 0.5;
         this.color = PURPLE;
     }
 
@@ -112,6 +112,7 @@ class Building {
 class Wall extends Building {
     constructor(position) {
         super(position);
+
         this.color = DARK_GREY;
     }
 }
@@ -119,6 +120,8 @@ class Wall extends Building {
 class Tower extends Building {
     constructor(position) {
         super(position);
+
+        this.radius = 0.4;
         this.color = BLUE;
     }
 }
@@ -150,6 +153,16 @@ map.camera.position = new Vector(0, 0);
 //map.towers.push(new Building(new Vector(8, 7)));
 
 
+var selectedBuilding = Tower;
+
+function mousePlaceBuilding() {
+    var v = map.camera.reverse(mousePosition).floor();
+    //map.tiles[v.x][v.y] = "wall";
+    map.buildings.push(new selectedBuilding(v));
+    console.log(v);
+}
+
+
 function draw() {
     map.draw(ctx);
 
@@ -161,9 +174,7 @@ function update() {
     //map.camera.rotation += 0.01;
 
     if(mousePressed) {
-        var v = map.camera.reverse(mousePosition).floor();
-        map.tiles[v.x][v.y] = "wall";
-        console.log(v);
+        mousePlaceBuilding();
     }
 
     var x = 0;
@@ -184,5 +195,5 @@ function update() {
 }
 
 function onMouseDown() {
-
+    mousePlaceBuilding();
 }
