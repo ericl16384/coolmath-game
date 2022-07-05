@@ -953,7 +953,11 @@ function createDungeon(width, height, roomCmds, tileCosts=undefined) {
 
 var WHITE = "#ffffff";
 var BLACK = "#000000";
+
 var GREY = "#808080";
+
+var DARK_GREY = "#404040";
+var LIGHT_GREY = "#b0b0b0";
 
 var RED = "#ff0000";
 var GREEN = "#00ff00";
