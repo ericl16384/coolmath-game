@@ -94,12 +94,22 @@ class Map {
 }
 
 
-class Building {
-    constructor(position) {
-        this.position = position;
+class BuildingPrototype {
+    constructor(name, radius, color) {
+        this.name = name;
 
-        this.radius = 0.5;
-        this.color = PURPLE;
+        this.radius = radius;
+        this.color = color;
+    }
+}
+
+class Building {
+    constructor(position, prototype) {
+        this.position = position;
+        this.prototype = prototype;
+
+        this.radius = prototype.radius;
+        this.color = prototype.color;
     }
 
     draw(ctx, camera) {
@@ -109,22 +119,27 @@ class Building {
     }
 }
 
-class Wall extends Building {
-    constructor(position) {
-        super(position);
+//class Wall extends Building {
+//    constructor(position) {
+//        super(position);
 
-        this.color = DARK_GREY;
-    }
-}
+//        this.color = DARK_GREY;
+//    }
+//}
 
-class Tower extends Building {
-    constructor(position) {
-        super(position);
+//class Tower extends Building {
+//    constructor(position) {
+//        super(position);
 
-        this.radius = 0.4;
-        this.color = BLUE;
-    }
-}
+//        this.radius = 0.4;
+//        this.color = BLUE;
+//    }
+//}
+
+var buildingPrototypes = [
+    new BuildingPrototype("wall", 0.5, DARK_GREY),
+    new BuildingPrototype("tower", 0.4, BLUE)
+];
 
 
 var map = new Map(50, 50);
@@ -135,44 +150,35 @@ var castleY = 7;
 var castleW = 7;
 var castleH = 7;
 for(let i=0; i<castleW; i++) {
-    map.buildings.push(new Wall(new Vector(castleX+i, castleY)));
+    map.buildings.push(new Building(new Vector(castleX+i, castleY), buildingPrototypes[0]));
 }
 for(let i=0; i<castleW; i++) {
-    map.buildings.push(new Wall(new Vector(castleX+i, castleY+castleH-1)));
+    map.buildings.push(new Building(new Vector(castleX+i, castleY+castleH-1), buildingPrototypes[0]));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.buildings.push(new Wall(new Vector(castleX, castleY+i)));
+    map.buildings.push(new Building(new Vector(castleX, castleY+i), buildingPrototypes[0]));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.buildings.push(new Wall(new Vector(castleX+castleW-1, castleY+i)));
+    map.buildings.push(new Building(new Vector(castleX+castleW-1, castleY+i), buildingPrototypes[0]));
 }
 
 map.camera.scale = 25;
 map.camera.position = new Vector(0, 0);
 
-//map.towers.push(new Building(new Vector(8, 7)));
 
-
-var selectedBuilding = Tower;
+var selectedBuildingPrototypeIndex = 0;
 
 function mousePlaceBuilding() {
     var v = map.camera.reverse(mousePosition).floor();
-    //map.tiles[v.x][v.y] = "wall";
-    map.buildings.push(new selectedBuilding(v));
-    console.log(v);
+    map.buildings.push(new Building(v, buildingPrototypes[selectedBuildingPrototypeIndex]));
 }
 
 
 function draw() {
     map.draw(ctx);
-
-    //drawCircle(ctx, mousePosition.arr(), 5, RED);
-    //drawCircle(ctx, map.camera.transform(map.camera.reverse(mousePosition)).arr(), 3, GREEN);
 }
 
 function update() {
-    //map.camera.rotation += 0.01;
-
     if(mousePressed) {
         mousePlaceBuilding();
     }
