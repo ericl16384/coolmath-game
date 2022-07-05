@@ -50,6 +50,7 @@ selected:
  - add map generation
    - forests
    - stone
+   - iron
 
 ## Resources
 ### HTML / Javascript
