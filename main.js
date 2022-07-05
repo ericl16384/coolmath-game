@@ -95,11 +95,13 @@ class Map {
 
 
 class BuildingPrototype {
-    constructor(name, radius, color) {
+    constructor(name, radius, color, placementCheck=b=>false) {
         this.name = name;
 
         this.radius = radius;
         this.color = color;
+
+        this.placementCheck = placementCheck;
     }
 }
 
@@ -119,26 +121,9 @@ class Building {
     }
 }
 
-//class Wall extends Building {
-//    constructor(position) {
-//        super(position);
-
-//        this.color = DARK_GREY;
-//    }
-//}
-
-//class Tower extends Building {
-//    constructor(position) {
-//        super(position);
-
-//        this.radius = 0.4;
-//        this.color = BLUE;
-//    }
-//}
-
 var buildingPrototypes = [
     new BuildingPrototype("wall", 0.5, DARK_GREY),
-    new BuildingPrototype("tower", 0.4, BLUE)
+    new BuildingPrototype("tower", 0.4, BLUE, b=>b=="wall")
 ];
 
 
@@ -166,11 +151,22 @@ map.camera.scale = 25;
 map.camera.position = new Vector(0, 0);
 
 
-var selectedBuildingPrototypeIndex = 0;
+var selectedBuildingPrototypeIndex = 1;
 
 function mousePlaceBuilding() {
     var v = map.camera.reverse(mousePosition).floor();
-    map.buildings.push(new Building(v, buildingPrototypes[selectedBuildingPrototypeIndex]));
+    var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
+    
+    for(let i=0; i<map.buildings.length; i++) {
+        var building = map.buildings[i];
+        if(building.position.eq(v) && !proto.placementCheck(building.prototype.name)) {
+            return false;
+        }
+    }
+
+    map.buildings.push(new Building(v, proto));
+    console.log(v);
+    return true;
 }
 
 

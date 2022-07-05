@@ -224,6 +224,14 @@ class Vector {
         return [this.x, this.y];
     }
 
+    eq(v) {
+        if(v instanceof Vector && this.x === v.x && this.y === v.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     //copy() {
     //    return new Vector(this.x, this.y);
     //}
