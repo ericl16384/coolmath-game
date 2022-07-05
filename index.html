@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>hello world</title>
+        <style>
+            body {
+                overflow-wrap: break-word;
+                word-break: break-all;
+            }
+            canvas {
+                background: #eeeeee;
+                display: block;
+                border-style: solid;
+                border-width: 1px;
+            }
+            .flex {
+                display: flex;
+            }
+            .margin {
+                margin: 8px;
+                display: inline-block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex">
+            <div class="margin">
+                <canvas id="main-canvas" width="1000" height="500"></canvas>
+            </div>
+            <div class="margin">
+                <pre id="side-panel">Javascript should display data here...</pre>
+            </div>
+        </div>
+        <script src="util.js"></script>
+        <script src="standardInterface.js"></script>
+        <script src="main.js"></script>
+    </body>
+</html>
