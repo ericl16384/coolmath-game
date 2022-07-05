@@ -222,4 +222,4 @@ function onMouseWheel(change) {
 
 
 
-lockPageScroll();
+//lockPageScroll();

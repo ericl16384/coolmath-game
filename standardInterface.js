@@ -7,6 +7,7 @@
 // init constants
 
 const ticksPerSecond = 20;
+var lockScrollOnCanvas = true;
 
 
 // init reference model
@@ -125,5 +126,20 @@ var onMouseWheel;
 document.addEventListener("wheel", function(event) {
     if(onMouseWheel !== undefined) {
         onMouseWheel(event.deltaY);
+    }
+});
+
+
+// lock scrolling on canvas
+
+canvas.addEventListener("mouseover", function(event) {
+    if(lockScrollOnCanvas) {
+        lockPageScroll();
+    }
+});
+
+canvas.addEventListener("mouseout", function(event) {
+    if(lockScrollOnCanvas) {
+        unlockPageScroll();
     }
 });
