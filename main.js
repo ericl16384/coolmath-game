@@ -1,14 +1,34 @@
 class CameraTransform {
     constructor() {
-        this.offset = new Vector(0, 0);
+        this.position = new Vector(0, 0);
         this.scale = 1
-        //this.rotation = 0;
+        this.rotation = 0;
         //this.invertX = false;
         //this.invertY = false;
     }
 
+    //get inversionVector() {
+    //    if(this.invertX) {
+    //        var x = -1;
+    //    } else {
+    //        var x = 1;
+    //    }
+
+    //    if(this.invertY) {
+    //        var y = -1;
+    //    } else {
+    //        var y = 1;
+    //    }
+
+    //    return new Vector(x, y);
+    //}
+
     transform(v) {
-        return v.mul(this.scale).add(this.offset);
+        return v.sub(this.position).mul(this.scale).rotate(-this.rotation);
+    }
+
+    reverse(v) {
+        return v.rotate(this.rotation).div(this.scale).add(this.position);
     }
 }
 
@@ -65,6 +85,8 @@ class Tower {
 
 var map = new Map(64, 32);
 map.camera.scale = 15;
+map.camera.position = new Vector(-10, 0);
+map.camera.invertY = true;
 
 //var tileSize = 15;
 
@@ -90,6 +112,13 @@ function draw() {
     map.draw(ctx);
 
     //units.forEach(u => u.draw(ctx, tileSize));
+
+    map.camera.rotation += 0.01;
+
+    drawCircle(ctx, mousePosition.arr(), 5, RED);
+    drawCircle(ctx, map.camera.transform(map.camera.reverse(mousePosition)).arr(), 3, GREEN);
 }
 
-function update() {}
+function update() {
+    //var [x, y] = map.camera.reverse()
+}

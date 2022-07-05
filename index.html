@@ -26,7 +26,7 @@
     <body>
         <div class="flex">
             <div class="margin">
-                <canvas id="main-canvas" width="1000" height="500"></canvas>
+                <canvas id="main-canvas" width="1000" height="500" onmousemove="updateMousePosition(event)" onclick="onClickHandler(event)"></canvas>
             </div>
             <div class="margin">
                 <pre id="side-panel">Javascript should display data here...</pre>

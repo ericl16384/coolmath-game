@@ -24,12 +24,7 @@ var ticksPerSecond = 20;
 var ticks = -1;
 
 
-//function draw() {}
-//function update() {}
-var draw = undefined;
-var update = undefined;
-
-
+var draw;
 setInterval(function() {
     if(draw !== undefined) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -37,12 +32,32 @@ setInterval(function() {
     }
 }, 10);
 
+var update;
 setInterval(function() {
     if(update !== undefined) {
         ticks++;
         update();
     }
 }, 1000/ticksPerSecond);
+
+
+var mousePosition = new Vector(0, 0);
+function updateMousePosition(event) {
+    var rect = canvas.getBoundingClientRect();
+    mousePosition = new Vector(
+        event.clientX - rect.left,
+        event.clientY - rect.top
+    );
+}
+
+var onClick;
+function onClickHandler(event) {
+    updateMousePosition(event);
+    if(onClick !== undefined) {
+        onClick();
+    }
+}
+
 
 // https://www.w3schools.com/jsref/dom_obj_event.asp
 //document.addEventListener("keydown", keyDownHandler, false);
