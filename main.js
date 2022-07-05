@@ -2,7 +2,7 @@ class CameraTransform {
     constructor() {
         this.position = new Vector(0, 0);
         this.scale = 1
-        this.rotation = 0;
+        //this.rotation = 0;
         //this.invertX = false;
         //this.invertY = false;
     }
@@ -24,11 +24,13 @@ class CameraTransform {
     //}
 
     transform(v) {
-        return v.sub(this.position).mul(this.scale).rotate(-this.rotation);
+        //return v.sub(this.position).mul(this.scale).rotate(-this.rotation);
+        return v.sub(this.position).mul(this.scale);
     }
 
     reverse(v) {
-        return v.rotate(this.rotation).div(this.scale).add(this.position);
+        //return v.rotate(this.rotation).div(this.scale).add(this.position);
+        return v.div(this.scale).add(this.position);
     }
 }
 
@@ -44,24 +46,25 @@ class Map {
         this.colors = {
             //"empty": WHITE,
             //"stone": BLACK
+            
             "grass": "#228B22",
             "wall": "#404040"
         }
     }
 
     draw(ctx) {
-        for(let i=0; i<this.width; i++) {
-            for(let j=0; j<this.height; j++) {
-                if(this.tiles[i][j] !== null) {
-                    var color = this.colors[this.tiles[i][j]];
+        for(let x=0; x<this.width; x++) {
+            for(let y=0; y<this.height; y++) {
+                if(this.tiles[x][y] !== null) {
+                    var color = this.colors[this.tiles[x][y]];
                     if(color === undefined) {
                         color = PURPLE;
                     }
                     drawPolygon(ctx, [
-                        this.camera.transform(new Vector(i, j)).arr(),
-                        this.camera.transform(new Vector(i+1, j)).arr(),
-                        this.camera.transform(new Vector(i+1, j+1)).arr(),
-                        this.camera.transform(new Vector(i, j+1)).arr()
+                        this.camera.transform(new Vector(x, y)).arr(),
+                        this.camera.transform(new Vector(x+1, y)).arr(),
+                        this.camera.transform(new Vector(x+1, y+1)).arr(),
+                        this.camera.transform(new Vector(x, y+1)).arr()
                     ], color, GREY);
                 }
             }
@@ -83,29 +86,41 @@ class Tower {
 }
 
 
-//var mapSize = [64, 32];
-
-var map = new Map(64, 32);
-map.camera.scale = 15;
-map.camera.position = new Vector(-10, 0);
+var map = new Map(40, 20);
+map.camera.scale = 25;
+map.camera.position = new Vector(0, 0);
 
 
 function draw() {
-    if(mousePressed) {
-        var v = map.camera.reverse(mousePosition).floor();
-        map.tiles[v.x][v.y] = "wall";
-    }
-    
-
     map.draw(ctx);
 
-
-    drawCircle(ctx, mousePosition.arr(), 5, RED);
-    drawCircle(ctx, map.camera.transform(map.camera.reverse(mousePosition)).arr(), 3, GREEN);
+    //drawCircle(ctx, mousePosition.arr(), 5, RED);
+    //drawCircle(ctx, map.camera.transform(map.camera.reverse(mousePosition)).arr(), 3, GREEN);
 }
 
 function update() {
     //map.camera.rotation += 0.01;
+
+    if(mousePressed) {
+        var v = map.camera.reverse(mousePosition).floor();
+        map.tiles[v.x][v.y] = "wall";
+    }
+
+    var x = 0;
+    var y = 0;
+    if(keysPressed["KeyW"]) {
+        y--;
+    }
+    if(keysPressed["KeyA"]) {
+        x--;
+    }
+    if(keysPressed["KeyS"]) {
+        y++;
+    }
+    if(keysPressed["KeyD"]) {
+        x++;
+    }
+    map.camera.position = map.camera.position.add(new Vector(x, y).mul(map.camera.scale / 20));
 }
 
 function onMouseDown() {

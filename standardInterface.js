@@ -1,29 +1,34 @@
 "use strict"; // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode/Transitioning_to_strict_mode
 
 
-//const keysPressed = {};
-//function keyDownHandler(e) {
-//    keysPressed[e.key] = true;
-//}
-//function keyUpHandler(e) {
-//    keysPressed[e.key] = false;
-//}
+// https://keyjs.dev/
 
-//function clickHandler() {
-//    // paragraph.style.display = "block";
-//    // paragraph.innerHTML += "!";
-//}
 
+// init constants
+
+const ticksPerSecond = 20;
+
+
+// init reference model
 
 var canvas = document.getElementById("main-canvas");
 var ctx = canvas.getContext("2d");
 
 var sidePanel = document.getElementById("side-panel");
 
-var ticksPerSecond = 20;
+
+// init globals
+
 var ticks = -1;
 
 var mousePosition = new Vector(0, 0);
+var mousePressed = false;
+
+var keysPressed = {};
+
+
+// global helpers
+
 function updateMousePosition(event) {
     var rect = canvas.getBoundingClientRect();
     mousePosition = new Vector(
@@ -32,8 +37,8 @@ function updateMousePosition(event) {
     );
 }
 
-var mousePressed = false;
 
+// undefined functions
 
 var draw;
 setInterval(function() {
@@ -51,8 +56,13 @@ setInterval(function() {
     }
 }, 1000/ticksPerSecond);
 
-
-document.addEventListener("mousemove", updateMousePosition)
+var onMouseMove;
+document.addEventListener("mousemove", function(event) {
+    updateMousePosition(event);
+    if(onMouseMove !== undefined) {
+        onMouseMove();
+    }
+});
 
 var onMouseDown;
 document.addEventListener("mousedown", function(event) {
@@ -72,7 +82,18 @@ document.addEventListener("mouseup", function(event) {
     }
 });
 
+var onKeyDown;
+document.addEventListener("keydown", function(event) {
+    keysPressed[event.code] = true;
+    if(onKeyDown !== undefined) {
+        onKeyDown();
+    }
+});
 
-// https://www.w3schools.com/jsref/dom_obj_event.asp
-//document.addEventListener("keydown", keyDownHandler, false);
-//document.addEventListener("keyup", keyUpHandler, false);
+var onKeyUp;
+document.addEventListener("keyup", function(event) {
+    keysPressed[event.code] = false;
+    if(onKeyUp !== undefined) {
+        onKeyUp();
+    }
+});
