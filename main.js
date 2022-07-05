@@ -87,6 +87,25 @@ class Tower {
 
 
 var map = new Map(40, 20);
+
+// add basic castle
+var castleX = 7;
+var castleY = 7;
+var castleW = 6;
+var castleH = 6;
+for(let i=0; i<castleW; i++) {
+    map.tiles[castleX+i][castleY] = "wall";
+}
+for(let i=0; i<castleW; i++) {
+    map.tiles[castleX+i][castleY+castleH-1] = "wall";
+}
+for(let i=0; i<castleH; i++) {
+    map.tiles[castleX][castleY+i] = "wall";
+}
+for(let i=0; i<castleH; i++) {
+    map.tiles[castleX+castleW-1][castleY+i] = "wall";
+}
+
 map.camera.scale = 25;
 map.camera.position = new Vector(0, 0);
 
@@ -104,6 +123,7 @@ function update() {
     if(mousePressed) {
         var v = map.camera.reverse(mousePosition).floor();
         map.tiles[v.x][v.y] = "wall";
+        console.log(v);
     }
 
     var x = 0;
@@ -124,4 +144,5 @@ function update() {
 }
 
 function onMouseDown() {
+
 }
