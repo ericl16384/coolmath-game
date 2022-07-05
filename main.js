@@ -38,12 +38,14 @@ class Map {
         this.width = width;
         this.height = height;
 
-        this.tiles = createTileSpace(width, height, "stone");
+        this.tiles = createTileSpace(width, height, "grass");
 
         this.camera = new CameraTransform();
         this.colors = {
-            "empty": WHITE,
-            "stone": BLACK
+            //"empty": WHITE,
+            //"stone": BLACK
+            "grass": "#228B22",
+            "wall": "#404040"
         }
     }
 
@@ -86,39 +88,25 @@ class Tower {
 var map = new Map(64, 32);
 map.camera.scale = 15;
 map.camera.position = new Vector(-10, 0);
-map.camera.invertY = true;
-
-//var tileSize = 15;
-
-//var terrainColors = {
-//    "empty": WHITE,
-//    "stone": BLACK
-//}
-//var terrainMap = createTileSpace(...mapSize, "stone");
-for(let i=0; i<20; i++) {
-    for(let j=0; j<20; j++) {
-        //terrainMap[i+10][j+10] = "empty";
-        map.tiles[i+10][j+10] = "empty";
-    }
-}
-
-
-//var units = [];
-//units.push(new Tower(new Vector(12, 12)));
 
 
 function draw() {
-    //drawMap(ctx, terrainMap, tileSize, terrainColors);
+    if(mousePressed) {
+        var v = map.camera.reverse(mousePosition).floor();
+        map.tiles[v.x][v.y] = "wall";
+    }
+    
+
     map.draw(ctx);
 
-    //units.forEach(u => u.draw(ctx, tileSize));
-
-    map.camera.rotation += 0.01;
 
     drawCircle(ctx, mousePosition.arr(), 5, RED);
     drawCircle(ctx, map.camera.transform(map.camera.reverse(mousePosition)).arr(), 3, GREEN);
 }
 
 function update() {
-    //var [x, y] = map.camera.reverse()
+    //map.camera.rotation += 0.01;
+}
+
+function onMouseDown() {
 }

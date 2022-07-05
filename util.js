@@ -209,6 +209,13 @@ class Vector {
     //        [this.x, this.y] = v;
     //    }
     //}
+
+    round(x=0) {
+        return new Vector(this.x.toFixed(x), this.y.toFixed(x));
+    }
+    floor() {
+        return new Vector(Math.floor(this.x), Math.floor(this.y));
+    }
     
     str(x=3) {
         return `<${this.x.toFixed(x)}, ${this.y.toFixed(x)}>`;

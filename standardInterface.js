@@ -23,6 +23,17 @@ var sidePanel = document.getElementById("side-panel");
 var ticksPerSecond = 20;
 var ticks = -1;
 
+var mousePosition = new Vector(0, 0);
+function updateMousePosition(event) {
+    var rect = canvas.getBoundingClientRect();
+    mousePosition = new Vector(
+        event.clientX - rect.left,
+        event.clientY - rect.top
+    );
+}
+
+var mousePressed = false;
+
 
 var draw;
 setInterval(function() {
@@ -41,25 +52,27 @@ setInterval(function() {
 }, 1000/ticksPerSecond);
 
 
-var mousePosition = new Vector(0, 0);
-function updateMousePosition(event) {
-    var rect = canvas.getBoundingClientRect();
-    mousePosition = new Vector(
-        event.clientX - rect.left,
-        event.clientY - rect.top
-    );
-}
+document.addEventListener("mousemove", updateMousePosition)
 
-var onClick;
-function onClickHandler(event) {
+var onMouseDown;
+document.addEventListener("mousedown", function(event) {
+    mousePressed = true;
     updateMousePosition(event);
-    if(onClick !== undefined) {
-        onClick();
+    if(onMouseDown !== undefined) {
+        onMouseDown();
     }
-}
+});
+
+var onMouseUp;
+document.addEventListener("mouseup", function(event) {
+    mousePressed = false;
+    updateMousePosition(event);
+    if(onMouseUp !== undefined) {
+        onMouseUp();
+    }
+});
 
 
 // https://www.w3schools.com/jsref/dom_obj_event.asp
 //document.addEventListener("keydown", keyDownHandler, false);
 //document.addEventListener("keyup", keyUpHandler, false);
-//document.addEventListener("click", clickHandler);
