@@ -106,6 +106,7 @@ for(let i=0; i<castleH; i++) {
     map.tiles[castleX+castleW-1][castleY+i] = "wall";
 }
 
+
 map.camera.scale = 25;
 map.camera.position = new Vector(0, 0);
 
