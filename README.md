@@ -45,10 +45,11 @@ selected:
 ## TODO
  - forces (player / enemy)
  - make units collide with entities and attack
+ - add attack animation
 
  - sprites
  - movement animation
- 
+
  - map generation
    - forests
    - stone

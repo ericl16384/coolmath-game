@@ -92,6 +92,20 @@ class Map {
         this.entities.forEach(e => e.draw(ctx, this.camera));
     }
 
+    update() {
+        var i = 0;
+        while(i < this.entities.length) {
+            this.entities[i].update(this);
+
+            if(this.entities[i].health <= 0) {
+                popAtIndex(this.entities, i);
+                continue;
+            }
+
+            i++;
+        }
+    }
+
     entitiesAtPosition(v) {
         return this.entities.filter(e => e.position.eq(v));
     }
@@ -110,9 +124,10 @@ class EntityPrototype {
 }
 
 class Entity {
-    constructor(prototype, position) {
+    constructor(prototype, position, force) {
         this.prototype = prototype;
         this.position = position;
+        this.force = force;
 
         this.radius = prototype.radius;
         this.color = prototype.color;
@@ -129,14 +144,19 @@ class Entity {
         this.color);
 
         // health indicators
-        if(this.health <= 0) {
-            this.drawDeathIndicator(ctx, camera);
-        } else if(this.health < this.maxHealth) {
+        //if(this.health <= 0) {
+        //    this.drawDeathIndicator(ctx, camera);
+        //} else
+        if(this.health < this.maxHealth) {
             this.drawHealthBar(ctx, camera);
         }
     }
 
     update(map) {
+        if(isNaN(this.health)) {
+            throw `health must be a number, not ${this.health}`;
+        }
+
         if(this.health <= 0) {
             this.dead = true;
             this.health = 0;
@@ -160,39 +180,39 @@ class Entity {
         color);
     }
 
-    drawDeathIndicator(ctx, camera) {
-        var center = this.position.add(0.5);
-        var offset = this.radius * Math.sqrt(2)/2;
-        drawLine(ctx,
-            camera.transform(center.add(new Vector(-offset, offset))).arr(),
-            camera.transform(center.add(new Vector(offset, -offset))).arr(),
-        RED);
-        drawLine(ctx,
-            camera.transform(center.add(new Vector(-offset, -offset))).arr(),
-            camera.transform(center.add(new Vector(offset, offset))).arr(),
-        RED);
-    }
-}
-
-
-class BuildingPrototype extends EntityPrototype {
-    //constructor(name, radius, color, health, placementCheck=b=>false) {
-    //    super(name, radius, color, health);
-
-    //    this.placementCheck = placementCheck;
+    //drawDeathIndicator(ctx, camera) {
+    //    var center = this.position.add(0.5);
+    //    var offset = this.radius * Math.sqrt(2)/2;
+    //    drawLine(ctx,
+    //        camera.transform(center.add(new Vector(-offset, offset))).arr(),
+    //        camera.transform(center.add(new Vector(offset, -offset))).arr(),
+    //    RED);
+    //    drawLine(ctx,
+    //        camera.transform(center.add(new Vector(-offset, -offset))).arr(),
+    //        camera.transform(center.add(new Vector(offset, offset))).arr(),
+    //    RED);
     //}
 }
+
+
+class BuildingPrototype extends EntityPrototype {}
 
 class Building extends Entity {}
 
 
-class UnitPrototype extends EntityPrototype {}
-
-class Unit extends Entity {
-    constructor(prototype, position, attackStrength) {
-        super(prototype, position);
+class UnitPrototype extends EntityPrototype {
+    constructor(name, radius, color, health, attackStrength, combatValue=0) {
+        super(name, radius, color, health, combatValue);
 
         this.attackStrength = attackStrength;
+    }
+}
+
+class Unit extends Entity {
+    constructor(prototype, position, force) {
+        super(prototype, position, force);
+        
+        this.attackStrength = prototype.attackStrength;
 
         this.pathTarget = null;
         this.pathUseCombatValues = true;
@@ -217,14 +237,35 @@ class Unit extends Entity {
             this.path.pop(); // current position
         }
 
-        if(this.path.length > 0) {
-            this.position = new Vector(...this.path.pop());
+        this.move(map);
+    }
+
+    move(map) {
+        var nextPosition = this.path[this.path.length-1];
+        if(nextPosition) {
+            nextPosition = new Vector(...nextPosition);
+        } else {
+            return;
         }
+
+        // attack
+        var colliding = map.entitiesAtPosition(nextPosition);
+        if(colliding.length > 0) {
+            this.attack(colliding[0]);
+            return;
+        }
+
+        // move
+        this.position = nextPosition;
+        this.path.pop();
+    }
+
+    attack(entity) {
+        console.log(entity, this.attackStrength);
+        entity.health -= this.attackStrength;
     }
 
     pathfind(map, target) {
-        //this.path = tiledAStar(map.tiles, ...this.position.arr(), ...target.arr(), {"grass": 1});
-
         this.path = gridAStar(...this.position.arr(), ...target.arr(), (x, y) => {
             if(x < 0 || y < 0 || x >= map.width || y >= map.height) {
                 return -1;
@@ -267,7 +308,7 @@ var buildingPrototypes = [
 ];
 
 var unitPrototypes = [
-    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3)
+    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2)
 ]
 
 
@@ -283,25 +324,28 @@ var castleY = 7;
 var castleW = 7;
 var castleH = 7;
 for(let i=0; i<castleW; i++) {
-    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY), "player"));
 }
 for(let i=0; i<castleW; i++) {
-    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY+castleH-1)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY+castleH-1), "player"));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX, castleY+i)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX, castleY+i), "player"));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+castleW-1, castleY+i)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+castleW-1, castleY+i), "player"));
 }
 
 
-var bestie = new Unit(unitPrototypes[0], new Vector(5, 4), 2);
-map.entities.push(bestie);
-bestie.pathTarget = new Vector(13, 10);
+var enemy = new Unit(unitPrototypes[0], new Vector(5, 4), "enemy");
+map.entities.push(enemy);
+enemy.pathTarget = new Vector(13, 10);
 
-//bestie.pathfind(map, new Vector(13, 10));
-//console.log(bestie.path);
+
+
+console.log(map.entities);
+
+
 
 
 var selectedBuildingPrototypeIndex = 0;
@@ -347,6 +391,7 @@ function update() {
         mousePlaceBuilding();
     }
 
+    // camera movement
     var x = 0;
     var y = 0;
     if(keysPressed["KeyW"]) {
@@ -364,7 +409,7 @@ function update() {
     map.camera.position = map.camera.position.add(new Vector(x, y).mul(map.camera.scale / 20));
 
 
-    map.entities.forEach(e => e.update(map));
+    map.update();
 }
 
 function onMouseDown() {
