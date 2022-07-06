@@ -42,6 +42,37 @@ class Camera {
     }
 }
 
+class Animation {
+    constructor(startTime, endTime, startPosition, endPosition) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
+
+        this.totalTime = this.endTime - this.startTime;
+
+        Object.freeze(this);
+    }
+
+    started(time) {
+        return time >= this.startTime;
+    }
+
+    finished(time) {
+        return time >= this.endTime;
+    }
+
+    position(time) {
+        if(!this.started(time)) {
+            return this.startPosition;
+        } else if(!this.finished(time)) {
+            return this.endPosition
+        } else {
+            return lerp(this.startPosition, this.endPosition, (time-this.startTime)/this.totalTime);
+        }
+    }
+}
+
 
 class Map {
     constructor(width, height) {
@@ -136,9 +167,17 @@ class Entity {
         this.combatValue = prototype.combatValue;
 
         this.dead = false;
+
+        this.nextPosition = null;
+        this.movementAnimation = null;
     }
 
     draw(ctx, camera) {
+        if(this.movementAnimation) {
+            position = this.movementAnimation.position(ticks);
+        } else {
+            this.position = this.position;
+        }
         drawCircle(ctx,
             camera.transform(this.position.add(0.5)).arr(), this.radius*camera.scale,
         this.color);
@@ -201,10 +240,11 @@ class Building extends Entity {}
 
 
 class UnitPrototype extends EntityPrototype {
-    constructor(name, radius, color, health, attackStrength, combatValue=0) {
+    constructor(name, radius, color, health, attackStrength, movementDuration, combatValue=0) {
         super(name, radius, color, health, combatValue);
 
         this.attackStrength = attackStrength;
+        this.movementDuration = movementDuration;
     }
 }
 
@@ -213,6 +253,7 @@ class Unit extends Entity {
         super(prototype, position, force);
         
         this.attackStrength = prototype.attackStrength;
+        this.movementDuration = prototype.movementDuration;
 
         this.pathTarget = null;
         this.pathUseCombatValues = true;
@@ -241,27 +282,39 @@ class Unit extends Entity {
     }
 
     move(map) {
-        var nextPosition = this.path[this.path.length-1];
-        if(nextPosition) {
-            nextPosition = new Vector(...nextPosition);
+        // stop if move already happening
+        if(this.movementAnimation) {
+            if(this.movementAnimation.finished(ticks)) {
+                this.movementAnimation = null;
+                this.position = this.nextPosition;
+            } else {
+                return;
+            }
+        }
+
+        // get next position
+        if(this.path[this.path.length-1]) {
+            //this.nextPosition = this.path[this.path.length-1];
+            this.nextPosition = this.path.pop();
         } else {
             return;
         }
 
         // attack
-        var colliding = map.entitiesAtPosition(nextPosition);
+        var colliding = map.entitiesAtPosition(this.nextPosition);
         if(colliding.length > 0) {
             this.attack(colliding[0]);
             return;
         }
 
         // move
-        this.position = nextPosition;
-        this.path.pop();
+        this.movementAnimation = new Animation(
+            ticks, ticks+this.movementDuration,
+            this.position, this.nextPosition
+        );
     }
 
     attack(entity) {
-        console.log(entity, this.attackStrength);
         entity.health -= this.attackStrength;
     }
 
@@ -340,12 +393,6 @@ for(let i=1; i<castleH-1; i++) {
 var enemy = new Unit(unitPrototypes[0], new Vector(5, 4), "enemy");
 map.entities.push(enemy);
 enemy.pathTarget = new Vector(13, 10);
-
-
-
-console.log(map.entities);
-
-
 
 
 var selectedBuildingPrototypeIndex = 0;
