@@ -215,7 +215,7 @@ class Unit extends Entity {
 
 var buildingPrototypes = [
     new BuildingPrototype("wall", 0.5, DARK_GREY, 20),
-    new BuildingPrototype("tower", 0.4, BLUE, 5, b=>b=="wall")
+    new BuildingPrototype("turret", 0.4, BLUE, 5, b=>b=="wall")
 ];
 
 var unitPrototypes = [
