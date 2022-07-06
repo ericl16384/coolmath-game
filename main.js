@@ -91,6 +91,10 @@ class Map {
         // entities
         this.entities.forEach(e => e.draw(ctx, this.camera));
     }
+
+    entitiesAtPosition(v) {
+        return this.entities.filter(e => e.position.eq(v));
+    }
 }
 
 
@@ -105,7 +109,7 @@ class EntityPrototype {
 }
 
 class Entity {
-    constructor(prototype, position) {
+    constructor(prototype, position, combatValue=0) {
         this.prototype = prototype;
         this.position = position;
 
@@ -115,6 +119,8 @@ class Entity {
         this.maxHealth = prototype.health;
 
         this.dead = false;
+
+        this.combatValue = combatValue;
     }
 
     draw(ctx, camera) {
@@ -130,7 +136,7 @@ class Entity {
         }
     }
 
-    update() {
+    update(map) {
         if(this.health <= 0) {
             this.dead = true;
             this.health = 0;
@@ -170,11 +176,11 @@ class Entity {
 
 
 class BuildingPrototype extends EntityPrototype {
-    constructor(name, radius, color, health, placementCheck=b=>false) {
-        super(name, radius, color, health);
+    //constructor(name, radius, color, health, placementCheck=b=>false) {
+    //    super(name, radius, color, health);
 
-        this.placementCheck = placementCheck;
-    }
+    //    this.placementCheck = placementCheck;
+    //}
 }
 
 class Building extends Entity {}
@@ -183,9 +189,13 @@ class Building extends Entity {}
 class UnitPrototype extends EntityPrototype {}
 
 class Unit extends Entity {
-    constructor(prototype, position) {
+    constructor(prototype, position, attackStrength) {
         super(prototype, position);
 
+        this.attackStrength = attackStrength;
+
+        this.pathTarget = null;
+        this.pathUseCombatValues = false;
         this.path = [];
 
         this.doDrawPath = true;
@@ -199,8 +209,34 @@ class Unit extends Entity {
         }
     }
 
+    update(map) {
+        super.update(map);
+
+        if(this.pathTarget) {
+            this.pathfind(map, this.pathTarget);
+        }
+    }
+
     pathfind(map, target) {
-        this.path = tiledAStar(map.tiles, ...this.position.arr(), ...target.arr(), {"grass": 1});
+        //this.path = tiledAStar(map.tiles, ...this.position.arr(), ...target.arr(), {"grass": 1});
+
+        this.path = gridAStar(...this.position.arr(), ...target.arr(), (x, y) => {
+            if(x < 0 || y < 0 || x >= map.width || y >= map.height) {
+                return -1;
+            }
+            var cost = 1;
+
+            // ignore tiles for now
+
+            map.entitiesAtPosition(new Vector(x, y)).forEach(e => {
+                cost += e.health/this.attackStrength;
+                if(this.pathUseCombatValues) {
+                    cost -= e.combatValue;
+                }
+            });
+
+            return cost;
+        });
     }
 
     drawPath(ctx, camera) {
@@ -214,10 +250,9 @@ class Unit extends Entity {
 }
 
 
-
 var buildingPrototypes = [
-    new BuildingPrototype("wall", 0.5, DARK_GREY, 20),
-    new BuildingPrototype("turret", 0.4, BLUE, 5, b=>b=="wall")
+    new BuildingPrototype("wall", 0.5, DARK_GREY, 20, 1),
+    new BuildingPrototype("ballista", 0.4, BLUE, 5, 10)//, b=>b=="wall")
 ];
 
 var unitPrototypes = [
@@ -250,15 +285,20 @@ for(let i=1; i<castleH-1; i++) {
 }
 
 
-var bestie = new Unit(unitPrototypes[0], new Vector(5, 4));
+var bestie = new Unit(unitPrototypes[0], new Vector(5, 4), 2);
 map.entities.push(bestie);
-bestie.pathfind(map, new Vector(13, 10));
-console.log(bestie.path);
+bestie.pathTarget = new Vector(13, 10);
+
+//bestie.pathfind(map, new Vector(13, 10));
+//console.log(bestie.path);
 
 
 var selectedBuildingPrototypeIndex = 0;
 
 function mousePlaceBuilding() {
+    // for now buildings cannot be stacked
+
+
     var v = map.camera.reverse(mousePosition).floor();
 
     if(v.x < 0 || v.y < 0 || v.x >= map.width || v.y >= map.height) {
@@ -269,7 +309,7 @@ function mousePlaceBuilding() {
     
     for(let i=0; i<map.entities.length; i++) {
         var building = map.entities[i];
-        if(building.position.eq(v) && !proto.placementCheck(building.prototype.name)) {
+        if(building.position.eq(v)) {// && !proto.placementCheck(building.prototype.name)) {
             return false;
         }
     }
@@ -313,7 +353,7 @@ function update() {
     map.camera.position = map.camera.position.add(new Vector(x, y).mul(map.camera.scale / 20));
 
 
-    map.entities.forEach(e => e.update());
+    map.entities.forEach(e => e.update(map));
 }
 
 function onMouseDown() {

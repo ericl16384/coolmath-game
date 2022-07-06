@@ -563,33 +563,12 @@ class PathfindingNode {
     }
 }
 
-function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined) {
-    function tileCostFunc(x, y) {
-        if(x < 0 || x >= map.length || y < 0 || y >= map[0].length) {
-            return -1;
-        } else if(tileCosts === undefined) {
-            // standard
-            console.log(x);
-            if(isNaN(map[x][y]) || map[x][y] < 0) {
-                return -1;
-            } else {
-                return map[x][y];
-            }
-        } else {
-            // with lookup
-            if(tileCosts[map[x][y]] === undefined) {
-                return -1;
-            } else {
-                return tileCosts[map[x][y]];
-            }
-        }
-    }
-
+function gridAStar(startX, startY, targetX, targetY, costFunction) {
     // if start or target obstructed, then raise error
-    if(tileCostFunc(startX, startY) == -1) {
+    if(costFunction(startX, startY) == -1) {
         throw "start obstructed";
     }
-    if(tileCostFunc(targetX, targetY) == -1) {
+    if(costFunction(targetX, targetY) == -1) {
         throw "target obstructed";
     }
 
@@ -641,7 +620,7 @@ function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined) 
             }
 
             // determine tile cost
-            var tileCost = tileCostFunc(newX, newY);
+            var tileCost = costFunction(newX, newY);
             if(tileCost < 0) {
                 // move is impossible, skip
                 continue;
@@ -664,6 +643,29 @@ function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined) 
     }
 
     throw "no path found";
+}
+
+function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined) {
+    return gridAStar(startX, startY, targetX, targetY, (x, y) => {
+        if(x < 0 || x >= map.length || y < 0 || y >= map[0].length) {
+            return -1;
+        } else if(tileCosts === undefined) {
+            // standard
+            console.log(x);
+            if(isNaN(map[x][y]) || map[x][y] < 0) {
+                return -1;
+            } else {
+                return map[x][y];
+            }
+        } else {
+            // with lookup
+            if(tileCosts[map[x][y]] === undefined) {
+                return -1;
+            } else {
+                return tileCosts[map[x][y]];
+            }
+        }
+    });
 }
 
 
