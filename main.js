@@ -177,27 +177,10 @@ class BuildingPrototype extends EntityPrototype {
     }
 }
 
-class Building extends Entity {
-    //constructor(position, prototype) {
-    //    this.position = position;
-    //    this.prototype = prototype;
-
-    //    this.radius = prototype.radius;
-    //    this.color = prototype.color;
-    //    this.health = prototype.health;
-        
-    //    this.maxHealth = prototype.health;
-
-    //    this.dead = false;
-    //}
-}
+class Building extends Entity {}
 
 
-class UnitPrototype extends EntityPrototype {
-    //constructor(name, radius, color, health) {
-    //    super(name, radius, color, health);
-    //}
-}
+class UnitPrototype extends EntityPrototype {}
 
 class Unit extends Entity {
     constructor(prototype, position) {
@@ -328,14 +311,6 @@ function update() {
         x++;
     }
     map.camera.position = map.camera.position.add(new Vector(x, y).mul(map.camera.scale / 20));
-
-
-    //// debug
-    //map.entities[randInt(0, map.entities.length)].health--;
-    //map.entities[randInt(0, map.entities.length)].health--;
-    //map.entities[randInt(0, map.entities.length)].health--;
-    //map.entities[randInt(0, map.entities.length)].health--;
-    //map.entities[randInt(0, map.entities.length)].health--;
 
 
     map.entities.forEach(e => e.update());
