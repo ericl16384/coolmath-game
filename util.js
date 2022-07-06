@@ -149,9 +149,10 @@ function averagePoint(p1, p2) {
     ]
 }
 
-function lerp(p1, p2, t) {
-    return [p1[0] + (p2[0] - p1[0])*t, p1[1] + (p2[1] - p1[1])*t];
-}
+// lerp moved to vectors
+//function lerp(p1, p2, t) {
+//    return [p1[0] + (p2[0] - p1[0])*t, p1[1] + (p2[1] - p1[1])*t];
+//}
 
 function displacement(x1, y1, x2, y2) {
     return [x2 - x1, y2 - y1];
@@ -317,6 +318,10 @@ class Vector {
         var s = Math.sin(angle);
         return new Vector(this.x*c - this.y*s, this.x*s + this.y*c);
     }
+}
+
+function lerp(a, b, t) {
+    return new Vector(a.x + (b.x - a.x)*t, a.y + (b.y - a.y)*t);
 }
 
 function angleToVector(theta, magnitude=1) {
