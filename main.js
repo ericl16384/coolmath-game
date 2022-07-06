@@ -95,11 +95,12 @@ class Map {
 
 
 class BuildingPrototype {
-    constructor(name, radius, color, placementCheck=b=>false) {
+    constructor(name, radius, color, health, placementCheck=b=>false) {
         this.name = name;
 
         this.radius = radius;
         this.color = color;
+        this.health = health;
 
         this.placementCheck = placementCheck;
     }
@@ -112,25 +113,74 @@ class Building {
 
         this.radius = prototype.radius;
         this.color = prototype.color;
+        this.health = prototype.health;
+        
+        this.maxHealth = prototype.health;
+
+        this.dead = false;
     }
 
     draw(ctx, camera) {
         drawCircle(ctx,
             camera.transform(this.position.add(0.5)).arr(), this.radius*camera.scale,
         this.color);
+
+        // health indicators
+        if(this.health <= 0) {
+            this.drawDeathIndicator(ctx, camera);
+        } else if(this.health < this.maxHealth) {
+            this.drawHealthBar(ctx, camera);
+        }
+    }
+
+    update() {
+        if(this.health <= 0) {
+            this.dead = true;
+            this.health = 0;
+        }
+    }
+
+    drawHealthBar(ctx, camera) {
+        var fraction = this.health / this.maxHealth;
+        if(fraction > 0.75) {
+            var color = GREEN;
+        } else if(fraction > 0.25) {
+            var color = YELLOW;
+        } else {
+            var color = RED;
+        }
+        var y = 0.5 + this.radius;
+        
+        drawLine(ctx,
+            camera.transform(this.position.add(new Vector(0, y))).arr(),
+            camera.transform(this.position.add(new Vector(fraction, y))).arr(),
+        color);
+    }
+
+    drawDeathIndicator(ctx, camera) {
+        var center = this.position.add(0.5);
+        var offset = this.radius * Math.sqrt(2)/2;
+        drawLine(ctx,
+            camera.transform(center.add(new Vector(-offset, offset))).arr(),
+            camera.transform(center.add(new Vector(offset, -offset))).arr(),
+        RED);
+        drawLine(ctx,
+            camera.transform(center.add(new Vector(-offset, -offset))).arr(),
+            camera.transform(center.add(new Vector(offset, offset))).arr(),
+        RED);
     }
 }
 
 var buildingPrototypes = [
-    new BuildingPrototype("wall", 0.5, DARK_GREY),
-    new BuildingPrototype("tower", 0.4, BLUE, b=>b=="wall")
+    new BuildingPrototype("wall", 0.5, DARK_GREY, 20),
+    new BuildingPrototype("tower", 0.4, BLUE, 5, b=>b=="wall")
 ];
 
 
 var map = new Map(50, 50);
 
 // add basic castle
-var castleX = 7;
+var castleX = 10;
 var castleY = 7;
 var castleW = 7;
 var castleH = 7;
@@ -155,6 +205,11 @@ var selectedBuildingPrototypeIndex = 1;
 
 function mousePlaceBuilding() {
     var v = map.camera.reverse(mousePosition).floor();
+
+    if(v.x < 0 || v.y < 0 || v.x >= map.width || v.y >= map.height) {
+        return false;
+    }
+
     var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
     
     for(let i=0; i<map.buildings.length; i++) {
@@ -170,6 +225,7 @@ function mousePlaceBuilding() {
 
 
 function draw() {
+    fillCanvas(ctx, canvas, BLACK);
     map.draw(ctx);
 
 
@@ -200,9 +256,24 @@ function update() {
         x++;
     }
     map.camera.position = map.camera.position.add(new Vector(x, y).mul(map.camera.scale / 20));
+
+
+    // debug
+    map.buildings[randInt(0, map.buildings.length)].health--;
+    map.buildings[randInt(0, map.buildings.length)].health--;
+    map.buildings[randInt(0, map.buildings.length)].health--;
+    map.buildings[randInt(0, map.buildings.length)].health--;
+    map.buildings[randInt(0, map.buildings.length)].health--;
+
+
+    map.buildings.forEach(b => b.update());
 }
 
 function onMouseDown() {
+    mousePlaceBuilding();
+}
+
+function onMouseUp() {
     mousePlaceBuilding();
 }
 
@@ -214,12 +285,3 @@ function onMouseWheel(change) {
     }
     selectedBuildingPrototypeIndex = mod(selectedBuildingPrototypeIndex, buildingPrototypes.length);
 }
-
-
-
-
-
-
-
-
-//lockPageScroll();
