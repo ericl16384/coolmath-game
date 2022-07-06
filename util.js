@@ -563,7 +563,12 @@ class PathfindingNode {
     }
 }
 
-function gridAStar(startX, startY, targetX, targetY, costFunction) {
+function gridAStar(startX, startY, targetX, targetY, costFunction, maxNodesChecked=256) {
+    // if already at start
+    if(startX === targetX && startY === targetY) {
+        return [];
+    }
+
     // if start or target obstructed, then raise error
     if(costFunction(startX, startY) == -1) {
         throw "start obstructed";
@@ -579,7 +584,13 @@ function gridAStar(startX, startY, targetX, targetY, costFunction) {
     var open = [start];
     var closed = [];
 
+    var nodesChecked = 1;
     while(open.length) {
+        if(nodesChecked >= maxNodesChecked) {
+            throw `checked ${nodesChecked} nodes; no path found`;
+        }
+        nodesChecked++;
+
         // finding the best node
         // inefficent, because it is not sorted, so a full scan is necessitated
         var bestIndex = 0;
@@ -645,7 +656,7 @@ function gridAStar(startX, startY, targetX, targetY, costFunction) {
     throw "no path found";
 }
 
-function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined) {
+function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined, maxNodesChecked=256) {
     return gridAStar(startX, startY, targetX, targetY, (x, y) => {
         if(x < 0 || x >= map.length || y < 0 || y >= map[0].length) {
             return -1;
@@ -665,7 +676,7 @@ function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined) 
                 return tileCosts[map[x][y]];
             }
         }
-    });
+    }, maxNodesChecked);
 }
 
 

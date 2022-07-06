@@ -99,17 +99,18 @@ class Map {
 
 
 class EntityPrototype {
-    constructor(name, radius, color, health) {
+    constructor(name, radius, color, health, combatValue=0) {
         this.name = name;
 
         this.radius = radius;
         this.color = color;
         this.health = health;
+        this.combatValue = combatValue;
     }
 }
 
 class Entity {
-    constructor(prototype, position, combatValue=0) {
+    constructor(prototype, position) {
         this.prototype = prototype;
         this.position = position;
 
@@ -117,10 +118,9 @@ class Entity {
         this.color = prototype.color;
         this.health = prototype.health;
         this.maxHealth = prototype.health;
+        this.combatValue = prototype.combatValue;
 
         this.dead = false;
-
-        this.combatValue = combatValue;
     }
 
     draw(ctx, camera) {
@@ -195,7 +195,7 @@ class Unit extends Entity {
         this.attackStrength = attackStrength;
 
         this.pathTarget = null;
-        this.pathUseCombatValues = false;
+        this.pathUseCombatValues = true;
         this.path = [];
 
         this.doDrawPath = true;
@@ -214,6 +214,11 @@ class Unit extends Entity {
 
         if(this.pathTarget) {
             this.pathfind(map, this.pathTarget);
+            this.path.pop(); // current position
+        }
+
+        if(this.path.length > 0) {
+            this.position = new Vector(...this.path.pop());
         }
     }
 
@@ -246,12 +251,18 @@ class Unit extends Entity {
                 camera.transform(new Vector(...this.path[i+1]).add(0.5)).arr(),
             RED);
         }
+        if(this.path.length > 0) { 
+            drawLine(ctx,
+                camera.transform(new Vector(...this.path[this.path.length-1]).add(0.5)).arr(),
+                camera.transform(this.position.add(0.5)).arr(),
+            RED);
+        }
     }
 }
 
 
 var buildingPrototypes = [
-    new BuildingPrototype("wall", 0.5, DARK_GREY, 20, 1),
+    new BuildingPrototype("wall", 0.5, DARK_GREY, 20),
     new BuildingPrototype("ballista", 0.4, BLUE, 5, 10)//, b=>b=="wall")
 ];
 
@@ -324,7 +335,7 @@ function draw() {
     map.draw(ctx);
 
 
-    // side panel
+    // selection panel
 
     drawCircle(ctx, [0, 0], 100, WHITE, BLACK);
     var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
