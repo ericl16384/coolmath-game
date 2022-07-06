@@ -59,7 +59,7 @@ class Map {
             //"wall": "#404040"
         }
 
-        this.buildings = [];
+        this.entities = [];
     }
 
     draw(ctx) {
@@ -88,8 +88,8 @@ class Map {
             }
         }
 
-        // buildings
-        this.buildings.forEach(b => b.draw(ctx, this.camera));
+        // entities
+        this.entities.forEach(e => e.draw(ctx, this.camera));
     }
 }
 
@@ -199,6 +199,18 @@ class UnitPrototype extends EntityPrototype {
     //}
 }
 
+class Unit extends Entity {
+    constructor(prototype, position) {
+        super(prototype, position);
+
+        this.path = [];
+    }
+
+    pathfind(map, target) {
+        this.path = tiledAStar(map, ...this.position.arr(), ...target.arr(), t=>1);
+    }
+}
+
 
 
 var buildingPrototypes = [
@@ -206,8 +218,16 @@ var buildingPrototypes = [
     new BuildingPrototype("tower", 0.4, BLUE, 5, b=>b=="wall")
 ];
 
+var unitPrototypes = [
+    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3)
+]
+
 
 var map = new Map(50, 50);
+
+map.camera.scale = 25;
+map.camera.position = new Vector(0, 0);
+
 
 // add basic castle
 var castleX = 10;
@@ -215,20 +235,20 @@ var castleY = 7;
 var castleW = 7;
 var castleH = 7;
 for(let i=0; i<castleW; i++) {
-    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY)));
 }
 for(let i=0; i<castleW; i++) {
-    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY+castleH-1)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY+castleH-1)));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX, castleY+i)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX, castleY+i)));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX+castleW-1, castleY+i)));
+    map.entities.push(new Building(buildingPrototypes[0], new Vector(castleX+castleW-1, castleY+i)));
 }
 
-map.camera.scale = 25;
-map.camera.position = new Vector(0, 0);
+
+map.entities.push(new Unit(unitPrototypes[0], new Vector(13, 4)));
 
 
 var selectedBuildingPrototypeIndex = 1;
@@ -242,14 +262,14 @@ function mousePlaceBuilding() {
 
     var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
     
-    for(let i=0; i<map.buildings.length; i++) {
-        var building = map.buildings[i];
+    for(let i=0; i<map.entities.length; i++) {
+        var building = map.entities[i];
         if(building.position.eq(v) && !proto.placementCheck(building.prototype.name)) {
             return false;
         }
     }
 
-    map.buildings.push(new Building(proto, v));
+    map.entities.push(new Building(proto, v));
     return true;
 }
 
@@ -288,15 +308,15 @@ function update() {
     map.camera.position = map.camera.position.add(new Vector(x, y).mul(map.camera.scale / 20));
 
 
-    // debug
-    map.buildings[randInt(0, map.buildings.length)].health--;
-    map.buildings[randInt(0, map.buildings.length)].health--;
-    map.buildings[randInt(0, map.buildings.length)].health--;
-    map.buildings[randInt(0, map.buildings.length)].health--;
-    map.buildings[randInt(0, map.buildings.length)].health--;
+    //// debug
+    //map.entities[randInt(0, map.entities.length)].health--;
+    //map.entities[randInt(0, map.entities.length)].health--;
+    //map.entities[randInt(0, map.entities.length)].health--;
+    //map.entities[randInt(0, map.entities.length)].health--;
+    //map.entities[randInt(0, map.entities.length)].health--;
 
 
-    map.buildings.forEach(b => b.update());
+    map.entities.forEach(e => e.update());
 }
 
 function onMouseDown() {
