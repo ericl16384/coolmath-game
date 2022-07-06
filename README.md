@@ -43,14 +43,17 @@ selected:
    - towers are placed on the path similarly
 
 ## TODO
- - add enemies
- - make objects destructable
-   - make walls not be map tiles
- - add sprites
- - add map generation
+ - forces (player / enemy)
+ - make units collide with entities and attack
+
+ - sprites
+ - movement animation
+ 
+ - map generation
    - forests
    - stone
    - iron
+ - money
 
 ## Resources
 ### HTML / Javascript
