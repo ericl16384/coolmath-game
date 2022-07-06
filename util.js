@@ -586,10 +586,10 @@ function tiledAStar(map, startX, startY, targetX, targetY, tileCosts=undefined) 
     }
 
     // if start or target obstructed, then raise error
-    if(tileCostFunc(startX, startY) < 0) {
+    if(tileCostFunc(startX, startY) == -1) {
         throw "start obstructed";
     }
-    if(tileCostFunc(targetX, targetY) < 0) {
+    if(tileCostFunc(targetX, targetY) == -1) {
         throw "target obstructed";
     }
 
@@ -982,6 +982,17 @@ function drawLine(ctx, p1, p2, color) {
     ctx.beginPath();
     ctx.moveTo(...p1);
     ctx.lineTo(...p2);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function drawLines(ctx, points, color) {
+    ctx.beginPath();
+    ctx.moveTo(...points[0]);
+    for(let i=1; i<points.length; i++) {
+        ctx.lineTo(...points[i]);
+    }
     ctx.strokeStyle = color;
     ctx.stroke();
     ctx.closePath();

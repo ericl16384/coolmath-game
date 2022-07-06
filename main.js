@@ -204,10 +204,29 @@ class Unit extends Entity {
         super(prototype, position);
 
         this.path = [];
+
+        this.doDrawPath = true;
+    }
+
+    draw(ctx, camera) {
+        super.draw(ctx, camera);
+
+        if(this.doDrawPath) {
+            this.drawPath(ctx, camera);
+        }
     }
 
     pathfind(map, target) {
-        this.path = tiledAStar(map, ...this.position.arr(), ...target.arr(), t=>1);
+        this.path = tiledAStar(map.tiles, ...this.position.arr(), ...target.arr(), {"grass": 1});
+    }
+
+    drawPath(ctx, camera) {
+        for(let i=0; i<this.path.length-1; i++) {
+            drawLine(ctx,
+                camera.transform(new Vector(...this.path[i]).add(0.5)).arr(),
+                camera.transform(new Vector(...this.path[i+1]).add(0.5)).arr(),
+            RED);
+        }
     }
 }
 
@@ -248,10 +267,13 @@ for(let i=1; i<castleH-1; i++) {
 }
 
 
-map.entities.push(new Unit(unitPrototypes[0], new Vector(13, 4)));
+var bestie = new Unit(unitPrototypes[0], new Vector(5, 4));
+map.entities.push(bestie);
+bestie.pathfind(map, new Vector(13, 10));
+console.log(bestie.path);
 
 
-var selectedBuildingPrototypeIndex = 1;
+var selectedBuildingPrototypeIndex = 0;
 
 function mousePlaceBuilding() {
     var v = map.camera.reverse(mousePosition).floor();
