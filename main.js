@@ -94,27 +94,24 @@ class Map {
 }
 
 
-class BuildingPrototype {
-    constructor(name, radius, color, health, placementCheck=b=>false) {
+class EntityPrototype {
+    constructor(name, radius, color, health) {
         this.name = name;
 
         this.radius = radius;
         this.color = color;
         this.health = health;
-
-        this.placementCheck = placementCheck;
     }
 }
 
-class Building {
-    constructor(position, prototype) {
-        this.position = position;
+class Entity {
+    constructor(prototype, position) {
         this.prototype = prototype;
+        this.position = position;
 
         this.radius = prototype.radius;
         this.color = prototype.color;
         this.health = prototype.health;
-        
         this.maxHealth = prototype.health;
 
         this.dead = false;
@@ -171,6 +168,39 @@ class Building {
     }
 }
 
+
+class BuildingPrototype extends EntityPrototype {
+    constructor(name, radius, color, health, placementCheck=b=>false) {
+        super(name, radius, color, health);
+
+        this.placementCheck = placementCheck;
+    }
+}
+
+class Building extends Entity {
+    //constructor(position, prototype) {
+    //    this.position = position;
+    //    this.prototype = prototype;
+
+    //    this.radius = prototype.radius;
+    //    this.color = prototype.color;
+    //    this.health = prototype.health;
+        
+    //    this.maxHealth = prototype.health;
+
+    //    this.dead = false;
+    //}
+}
+
+
+class UnitPrototype extends EntityPrototype {
+    //constructor(name, radius, color, health) {
+    //    super(name, radius, color, health);
+    //}
+}
+
+
+
 var buildingPrototypes = [
     new BuildingPrototype("wall", 0.5, DARK_GREY, 20),
     new BuildingPrototype("tower", 0.4, BLUE, 5, b=>b=="wall")
@@ -185,16 +215,16 @@ var castleY = 7;
 var castleW = 7;
 var castleH = 7;
 for(let i=0; i<castleW; i++) {
-    map.buildings.push(new Building(new Vector(castleX+i, castleY), buildingPrototypes[0]));
+    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY)));
 }
 for(let i=0; i<castleW; i++) {
-    map.buildings.push(new Building(new Vector(castleX+i, castleY+castleH-1), buildingPrototypes[0]));
+    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX+i, castleY+castleH-1)));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.buildings.push(new Building(new Vector(castleX, castleY+i), buildingPrototypes[0]));
+    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX, castleY+i)));
 }
 for(let i=1; i<castleH-1; i++) {
-    map.buildings.push(new Building(new Vector(castleX+castleW-1, castleY+i), buildingPrototypes[0]));
+    map.buildings.push(new Building(buildingPrototypes[0], new Vector(castleX+castleW-1, castleY+i)));
 }
 
 map.camera.scale = 25;
@@ -219,7 +249,7 @@ function mousePlaceBuilding() {
         }
     }
 
-    map.buildings.push(new Building(v, proto));
+    map.buildings.push(new Building(proto, v));
     return true;
 }
 
