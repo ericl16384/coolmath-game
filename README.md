@@ -43,14 +43,15 @@ selected:
    - towers are placed on the path similarly
 
 ## TODO
- - assets
-   - wall
-   - ballista
-   - swordsman
-
+### Assets
+ - wall
+ - ballista
+ - swordsman
+### Programming
+ - ballista shoots
  - allow sprites
  - attack animation
-
+### Future ideas
  - map generation
    - forests
    - stone
