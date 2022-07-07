@@ -22,6 +22,8 @@ var sidePanel = document.getElementById("side-panel");
 
 var ticks = -1;
 
+var lastTickTime = Date.now();
+
 var keysPressed = {};
 
 var mousePosition = new Vector(0, 0);
@@ -76,6 +78,7 @@ var update;
 setInterval(function() {
     if(update !== undefined) {
         ticks++;
+        lastTickTime = Date.now();
         update();
     }
 }, 1000/ticksPerSecond);

@@ -322,7 +322,6 @@ class Unit extends Entity {
 
     attack(entity) {
         entity.health -= this.attackStrength;
-        console.log(this.position, this.nextPosition, entity);
     }
 
     pathfind(map, target) {
@@ -368,7 +367,7 @@ var buildingPrototypes = [
 ];
 
 var unitPrototypes = [
-    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2, 10)
+    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2, 2)
 ]
 
 
