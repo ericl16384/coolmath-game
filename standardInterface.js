@@ -97,7 +97,7 @@ document.addEventListener("keyup", function(event) {
 });
 
 var onMouseMove;
-document.addEventListener("mousemove", function(event) {
+canvas.addEventListener("mousemove", function(event) {
     updateMousePosition(event);
     if(onMouseMove !== undefined) {
         onMouseMove();
@@ -105,7 +105,7 @@ document.addEventListener("mousemove", function(event) {
 });
 
 var onMouseDown;
-document.addEventListener("mousedown", function(event) {
+canvas.addEventListener("mousedown", function(event) {
     mousePressed = true;
     updateMousePosition(event);
     if(onMouseDown !== undefined) {
@@ -114,7 +114,7 @@ document.addEventListener("mousedown", function(event) {
 });
 
 var onMouseUp;
-document.addEventListener("mouseup", function(event) {
+canvas.addEventListener("mouseup", function(event) {
     mousePressed = false;
     updateMousePosition(event);
     if(onMouseUp !== undefined) {
@@ -123,7 +123,7 @@ document.addEventListener("mouseup", function(event) {
 });
 
 var onMouseWheel;
-document.addEventListener("wheel", function(event) {
+canvas.addEventListener("wheel", function(event) {
     if(onMouseWheel !== undefined) {
         onMouseWheel(event.deltaY);
     }

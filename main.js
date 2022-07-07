@@ -65,7 +65,7 @@ class Animation {
     position(time) {
         if(!this.started(time)) {
             return this.startPosition;
-        } else if(!this.finished(time)) {
+        } else if(this.finished(time)) {
             return this.endPosition
         } else {
             return lerp(this.startPosition, this.endPosition, (time-this.startTime)/this.totalTime);
@@ -172,14 +172,17 @@ class Entity {
         this.movementAnimation = null;
     }
 
-    draw(ctx, camera) {
+    get drawPosition() {
         if(this.movementAnimation) {
-            position = this.movementAnimation.position(ticks);
+            return this.movementAnimation.position(ticks);
         } else {
-            this.position = this.position;
+            return this.position;
         }
+    }
+
+    draw(ctx, camera) {
         drawCircle(ctx,
-            camera.transform(this.position.add(0.5)).arr(), this.radius*camera.scale,
+            camera.transform(this.drawPosition.add(0.5)).arr(), this.radius*camera.scale,
         this.color);
 
         // health indicators
@@ -214,8 +217,8 @@ class Entity {
         var y = 0.5 + this.radius;
         
         drawLine(ctx,
-            camera.transform(this.position.add(new Vector(0, y))).arr(),
-            camera.transform(this.position.add(new Vector(fraction, y))).arr(),
+            camera.transform(this.drawPosition.add(new Vector(0, y))).arr(),
+            camera.transform(this.drawPosition.add(new Vector(fraction, y))).arr(),
         color);
     }
 
@@ -273,29 +276,32 @@ class Unit extends Entity {
     update(map) {
         super.update(map);
 
-        if(this.pathTarget) {
-            this.pathfind(map, this.pathTarget);
-            this.path.pop(); // current position
-        }
-
         this.move(map);
     }
 
     move(map) {
-        // stop if move already happening
+        // skip if move already happening
         if(this.movementAnimation) {
             if(this.movementAnimation.finished(ticks)) {
                 this.movementAnimation = null;
                 this.position = this.nextPosition;
+                this.path.pop()
             } else {
                 return;
             }
         }
 
+        // pathfind (can optimize, so it does not do it every tick)
+        if(this.pathTarget) {
+            this.pathfind(map, this.pathTarget);
+            this.path.pop(); // current position
+        } else {
+            return;
+        }
+
         // get next position
         if(this.path[this.path.length-1]) {
-            //this.nextPosition = this.path[this.path.length-1];
-            this.nextPosition = this.path.pop();
+            this.nextPosition = new Vector(...this.path[this.path.length-1]);
         } else {
             return;
         }
@@ -316,6 +322,7 @@ class Unit extends Entity {
 
     attack(entity) {
         entity.health -= this.attackStrength;
+        console.log(this.position, this.nextPosition, entity);
     }
 
     pathfind(map, target) {
@@ -348,7 +355,7 @@ class Unit extends Entity {
         if(this.path.length > 0) { 
             drawLine(ctx,
                 camera.transform(new Vector(...this.path[this.path.length-1]).add(0.5)).arr(),
-                camera.transform(this.position.add(0.5)).arr(),
+                camera.transform(this.drawPosition.add(0.5)).arr(),
             RED);
         }
     }
@@ -357,11 +364,11 @@ class Unit extends Entity {
 
 var buildingPrototypes = [
     new BuildingPrototype("wall", 0.5, DARK_GREY, 20),
-    new BuildingPrototype("ballista", 0.4, BLUE, 5, 10)//, b=>b=="wall")
+    new BuildingPrototype("ballista", 0.4, BROWN, 5, 10)//, b=>b=="wall")
 ];
 
 var unitPrototypes = [
-    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2)
+    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2, 10)
 ]
 
 
@@ -426,11 +433,15 @@ function draw() {
     map.draw(ctx);
 
 
-    // selection panel
+    // corner panel
 
-    drawCircle(ctx, [0, 0], 100, WHITE, BLACK);
+    drawCircle(ctx, [0, 50], 100, WHITE, BLACK);
+
     var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
     drawCircle(ctx, [40, 40], 25, proto.color);
+    drawText(ctx, proto.name, [40, 80]);
+
+    drawText(ctx, map.camera.reverse(mousePosition).floor().str(), [40, 110]);
 }
 
 function update() {

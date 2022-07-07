@@ -43,18 +43,22 @@ selected:
    - towers are placed on the path similarly
 
 ## TODO
- - forces (player / enemy)
- - make units collide with entities and attack
- - add attack animation
+ - assets
+   - wall
+   - ballista
+   - swordsman
 
- - sprites
+ - allow sprites
  - movement animation
+ - attack animation
 
  - map generation
    - forests
    - stone
    - iron
  - money
+ - players place unit in the castle
+   - use forces
 
 ## Resources
 ### HTML / Javascript

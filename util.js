@@ -202,6 +202,10 @@ class Vector {
         Object.freeze(this);
     }
 
+    get isInt() {
+        return isInt(this.x) && isInt(this.y);
+    }
+
     //set(v) {
     //    if(v instanceof Vector) {
     //        this.x = v.x;
@@ -218,8 +222,12 @@ class Vector {
         return new Vector(Math.floor(this.x), Math.floor(this.y));
     }
     
-    str(x=3) {
-        return `<${this.x.toFixed(x)}, ${this.y.toFixed(x)}>`;
+    str(x=null) {
+        if(x === null) {
+            return `<${this.x}, ${this.y}>`;
+        } else {
+            return `<${this.x.toFixed(x)}, ${this.y.toFixed(x)}>`;
+        }
     }
     arr() {
         return [this.x, this.y];
@@ -985,6 +993,8 @@ var GREY = "#808080";
 var DARK_GREY = "#404040";
 var LIGHT_GREY = "#b0b0b0";
 
+var BROWN = "#6e260e";
+
 var RED = "#ff0000";
 var GREEN = "#00ff00";
 var BLUE = "#0000ff";
@@ -1062,6 +1072,22 @@ function drawPolygon(ctx, points, fillColor, edgeColor=null) {
     ctx.closePath();
 }
 
+function drawText(ctx, message, position, fillColor=BLACK, edgeColor=null, fontSize=16, font="Arial", align="center") {
+    ctx.font = `${fontSize}px ${font}`;
+    ctx.textAlign = align;
+    if(fillColor !== null) {
+        ctx.fillStyle = fillColor;
+        ctx.fillText(message, ...position);
+    }
+    if(edgeColor !== null) {
+        ctx.strokeStyle = edgeColor;
+        ctx.strokeText(message, ...position);
+    }
+}
+
+
+// advanced canvas
+
 function fillCanvas(ctx, canvas, fillColor) {
     drawRectangle(ctx, [0, 0], [canvas.width, canvas.height], fillColor);
 }
@@ -1074,9 +1100,6 @@ function fillCanvas(ctx, canvas, fillColor) {
 //    ctx.arc(...pos, radius, 0, Math.PI*2);
 //    ctx.fill();
 //}
-
-
-// advanced canvas
 
 //function drawMap(ctx, map, tileSize, tileColors={}, gridColor=GREY) {
 //    var width = map.length;
@@ -1097,8 +1120,13 @@ function fillCanvas(ctx, canvas, fillColor) {
 //}
 
 
-// other idk
+// type checking
 
 function isString(x) {
     return typeof x === "string" || x instanceof String;
+}
+
+// https://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
+function isInt(value) {
+    return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
 }
