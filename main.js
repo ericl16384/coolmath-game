@@ -262,7 +262,7 @@ class Unit extends Entity {
         this.pathUseCombatValues = true;
         this.path = [];
 
-        this.doDrawPath = true;
+        this.doDrawPath = false;
     }
 
     draw(ctx, camera) {
@@ -367,7 +367,7 @@ var buildingPrototypes = [
 ];
 
 var unitPrototypes = [
-    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2, 2)
+    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2, 5)
 ]
 
 
