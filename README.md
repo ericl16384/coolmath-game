@@ -49,7 +49,6 @@ selected:
    - swordsman
 
  - allow sprites
- - movement animation
  - attack animation
 
  - map generation
