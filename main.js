@@ -341,7 +341,7 @@ class Unit extends Entity {
             });
 
             return cost;
-        });
+        }, 1024);
     }
 
     drawPath(ctx, camera) {
