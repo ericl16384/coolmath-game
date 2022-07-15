@@ -166,6 +166,8 @@ class BuildingPrototype extends EntityPrototype {}
 class Building extends Entity {}
 
 
+var pathfind_through_obstacles_cost_factor = 0.5
+
 class UnitPrototype extends EntityPrototype {
     constructor(name, radius, color, health, attackStrength, movementDuration, combatValue=0) {
         super(name, radius, color, health, combatValue);
@@ -258,7 +260,7 @@ class Unit extends Entity {
             // ignore tiles for now
 
             map.entitiesAtPosition(new Vector(x, y)).forEach(e => {
-                cost += e.health/this.attackStrength;
+                cost += e.health / this.attackStrength * pathfind_through_obstacles_cost_factor;
                 if(this.pathUseCombatValues) {
                     cost -= e.combatValue;
                 }
