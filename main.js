@@ -76,6 +76,10 @@ class EntityPrototype {
         this.health = health;
         this.combatValue = combatValue;
     }
+
+    draw(ctx, position, scale) {
+        ctx.drawImage(this.image, ...position.arr(), scale, scale);
+    }
 }
 
 class Entity {
@@ -95,7 +99,6 @@ class Entity {
 
     get drawPosition() {
         if(this.movementAnimation != null) {
-            console.log(this.movementAnimation)
             return this.movementAnimation.position(ticks);
         } else {
             return this.position;
@@ -238,7 +241,6 @@ class Unit extends Entity {
         }
 
         // move
-        print(this.movementDuration)
         this.movementAnimation = new Animation(
             ticks, ticks+this.movementDuration,
             this.position, this.nextPosition
@@ -361,8 +363,12 @@ function draw() {
 
     drawCircle(ctx, [0, 50], 100, WHITE, BLACK);
 
+    // selected building
+    var selectedBuildingScale = 25;
+    drawCircle(ctx, [40, 40], 20, WHITE, LIGHT_GREY);
     var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
-    drawCircle(ctx, [40, 40], 25, proto.debugColor);
+    //drawCircle(ctx, [40, 40], 25, proto.debugColor);
+    proto.draw(ctx, new Vector(40, 40).sub(selectedBuildingScale/2), selectedBuildingScale)
     drawText(ctx, proto.name, [40, 80]);
 
     drawText(ctx, map.camera.reverse(mousePosition).floor().str(), [40, 110]);

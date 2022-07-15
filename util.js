@@ -3,8 +3,14 @@
 
 
 
+// TODO
+// convert all point-based operations into vector-based
+
+
+
+
 // because I'm a Python nerd who can't seem to remember the difference
-print = console.log;
+//print = console.log;
 
 
 
