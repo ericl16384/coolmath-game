@@ -1,79 +1,3 @@
-class Camera {
-    constructor() {
-        this.position = new Vector(0, 0);
-        this.scale = 1
-        //this.rotation = 0;
-        //this.invertX = false;
-        //this.invertY = false;
-    }
-
-    //get inversionVector() {
-    //    if(this.invertX) {
-    //        var x = -1;
-    //    } else {
-    //        var x = 1;
-    //    }
-
-    //    if(this.invertY) {
-    //        var y = -1;
-    //    } else {
-    //        var y = 1;
-    //    }
-
-    //    return new Vector(x, y);
-    //}
-
-    transformScale(v) {
-        return v.mul(this.scale);
-    }
-
-    reverseScale(v) {
-        return v.div(this.scale);
-    }
-
-    transform(v) {
-        //return v.sub(this.position).mul(this.scale).rotate(-this.rotation);
-        return v.sub(this.position).mul(this.scale);
-    }
-
-    reverse(v) {
-        //return v.rotate(this.rotation).div(this.scale).add(this.position);
-        return v.div(this.scale).add(this.position);
-    }
-}
-
-class Animation {
-    constructor(startTime, endTime, startPosition, endPosition) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
-
-        this.totalTime = this.endTime - this.startTime;
-
-        Object.freeze(this);
-    }
-
-    started(time) {
-        return time >= this.startTime;
-    }
-
-    finished(time) {
-        return time >= this.endTime;
-    }
-
-    position(time) {
-        if(!this.started(time)) {
-            return this.startPosition;
-        } else if(this.finished(time)) {
-            return this.endPosition
-        } else {
-            return lerp(this.startPosition, this.endPosition, (time-this.startTime)/this.totalTime);
-        }
-    }
-}
-
-
 class Map {
     constructor(width, height) {
         this.width = width;
@@ -329,7 +253,7 @@ class Unit extends Entity {
             if(x < 0 || y < 0 || x >= map.width || y >= map.height) {
                 return -1;
             }
-            var cost = 1;
+            var cost = this.movementDuration;
 
             // ignore tiles for now
 
@@ -362,12 +286,12 @@ class Unit extends Entity {
 
 
 var buildingPrototypes = [
-    new BuildingPrototype("wall", 0.5, DARK_GREY, 20),
-    new BuildingPrototype("ballista", 0.4, BROWN, 5, 10)//, b=>b=="wall")
+    new BuildingPrototype("wall", 0.5, DARK_GREY, 100),
+    new BuildingPrototype("ballista", 0.4, BROWN, 10, 10)//, b=>b=="wall")
 ];
 
 var unitPrototypes = [
-    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 3, 2, 5)
+    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 10, 2, 5)
 ]
 
 
