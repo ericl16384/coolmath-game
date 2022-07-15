@@ -136,7 +136,7 @@ class Entity {
         } else {
             var color = RED;
         }
-        var y = 0.5 + this.radius;
+        var y = 1;
         
         drawLine(ctx,
             camera.transform(this.drawPosition.add(new Vector(0, y))).arr(),
