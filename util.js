@@ -1132,6 +1132,19 @@ function fillCanvas(ctx, canvas, fillColor) {
 //}
 
 
+// canvas images
+
+function loadImage(path) {
+    var image = new Image();
+    image.src = path;
+    return image;
+}
+
+//function drawImage(ctx, image, position, width=null, height=null) {
+//    ctx.drawImage(image, ...position, image.naturalWidth*scale, image.naturalHeight*scale);
+//}
+
+
 // camera
 
 class Camera {

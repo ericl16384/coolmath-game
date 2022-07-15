@@ -299,7 +299,7 @@ var unitPrototypes = [
 
 var map = new Map(50, 50);
 
-map.camera.scale = 25;
+map.camera.scale = 250;
 map.camera.position = new Vector(0, 0);
 
 
@@ -353,6 +353,9 @@ function mousePlaceBuilding() {
 }
 
 
+var wallImage = loadImage("assets/horizontal_wall.png");
+
+
 function draw() {
     fillCanvas(ctx, canvas, BLACK);
     map.draw(ctx);
@@ -367,6 +370,8 @@ function draw() {
     drawText(ctx, proto.name, [40, 80]);
 
     drawText(ctx, map.camera.reverse(mousePosition).floor().str(), [40, 110]);
+
+    ctx.drawImage(wallImage, 250, 300, map.camera.scale, map.camera.scale);
 }
 
 function update() {
