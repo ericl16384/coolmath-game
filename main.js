@@ -68,11 +68,11 @@ class Map {
 
 
 class EntityPrototype {
-    constructor(name, radius, color, health, combatValue=0) {
+    constructor(name, radius, debugColor, health, combatValue=0) {
         this.name = name;
 
         this.radius = radius;
-        this.color = color;
+        this.debugColor = debugColor;
         this.health = health;
         this.combatValue = combatValue;
     }
@@ -85,7 +85,7 @@ class Entity {
         this.force = force;
 
         this.radius = prototype.radius;
-        this.color = prototype.color;
+        this.debugColor = prototype.debugColor;
         this.health = prototype.health;
         this.maxHealth = prototype.health;
         this.combatValue = prototype.combatValue;
@@ -105,9 +105,10 @@ class Entity {
     }
 
     draw(ctx, camera) {
-        drawCircle(ctx,
-            camera.transform(this.drawPosition.add(0.5)).arr(), this.radius*camera.scale,
-        this.color);
+        //drawCircle(ctx,
+        //    camera.transform(this.drawPosition.add(0.5)).arr(), this.radius*camera.scale,
+        //this.debugColor);
+        ctx.drawImage(wallImage, ...camera.transform(this.drawPosition).arr(), camera.scale, camera.scale);
 
         // health indicators
         //if(this.health <= 0) {
@@ -169,8 +170,8 @@ class Building extends Entity {}
 var pathfind_through_obstacles_cost_factor = 0.5
 
 class UnitPrototype extends EntityPrototype {
-    constructor(name, radius, color, health, attackStrength, movementDuration, combatValue=0) {
-        super(name, radius, color, health, combatValue);
+    constructor(name, radius, debugColor, health, attackStrength, movementDuration, combatValue=0) {
+        super(name, radius, debugColor, health, combatValue);
 
         this.attackStrength = attackStrength;
         this.movementDuration = movementDuration;
@@ -299,7 +300,7 @@ var unitPrototypes = [
 
 var map = new Map(50, 50);
 
-map.camera.scale = 250;
+map.camera.scale = 25;
 map.camera.position = new Vector(0, 0);
 
 
@@ -366,12 +367,10 @@ function draw() {
     drawCircle(ctx, [0, 50], 100, WHITE, BLACK);
 
     var proto = buildingPrototypes[selectedBuildingPrototypeIndex];
-    drawCircle(ctx, [40, 40], 25, proto.color);
+    drawCircle(ctx, [40, 40], 25, proto.debugColor);
     drawText(ctx, proto.name, [40, 80]);
 
     drawText(ctx, map.camera.reverse(mousePosition).floor().str(), [40, 110]);
-
-    ctx.drawImage(wallImage, 250, 300, map.camera.scale, map.camera.scale);
 }
 
 function update() {
