@@ -66,13 +66,13 @@ class Map {
     }
 }
 
-
+//AllEntityPrototypes = {}
 class EntityPrototype {
-    constructor(name, radius, debugColor, health, combatValue=0) {
+    constructor(name, image, health, combatValue=0) {
         this.name = name;
+        //AllEntityPrototypes[name] = this;
 
-        this.radius = radius;
-        this.debugColor = debugColor;
+        this.image = image;
         this.health = health;
         this.combatValue = combatValue;
     }
@@ -84,20 +84,18 @@ class Entity {
         this.position = position;
         this.force = force;
 
-        this.radius = prototype.radius;
-        this.debugColor = prototype.debugColor;
+        this.image = prototype.image;
         this.health = prototype.health;
         this.maxHealth = prototype.health;
         this.combatValue = prototype.combatValue;
-
-        this.dead = false;
 
         this.nextPosition = null;
         this.movementAnimation = null;
     }
 
     get drawPosition() {
-        if(this.movementAnimation) {
+        if(this.movementAnimation != null) {
+            console.log(this.movementAnimation)
             return this.movementAnimation.position(ticks);
         } else {
             return this.position;
@@ -108,7 +106,7 @@ class Entity {
         //drawCircle(ctx,
         //    camera.transform(this.drawPosition.add(0.5)).arr(), this.radius*camera.scale,
         //this.debugColor);
-        ctx.drawImage(wallImage, ...camera.transform(this.drawPosition).arr(), camera.scale, camera.scale);
+        ctx.drawImage(this.image, ...camera.transform(this.drawPosition).arr(), camera.scale, camera.scale);
 
         // health indicators
         //if(this.health <= 0) {
@@ -125,7 +123,6 @@ class Entity {
         }
 
         if(this.health <= 0) {
-            this.dead = true;
             this.health = 0;
         }
     }
@@ -170,8 +167,8 @@ class Building extends Entity {}
 var pathfind_through_obstacles_cost_factor = 0.5
 
 class UnitPrototype extends EntityPrototype {
-    constructor(name, radius, debugColor, health, attackStrength, movementDuration, combatValue=0) {
-        super(name, radius, debugColor, health, combatValue);
+    constructor(name, health, attackStrength, movementDuration, combatValue=0) {
+        super(name, health, combatValue);
 
         this.attackStrength = attackStrength;
         this.movementDuration = movementDuration;
@@ -241,6 +238,7 @@ class Unit extends Entity {
         }
 
         // move
+        print(this.movementDuration)
         this.movementAnimation = new Animation(
             ticks, ticks+this.movementDuration,
             this.position, this.nextPosition
@@ -289,12 +287,12 @@ class Unit extends Entity {
 
 
 var buildingPrototypes = [
-    new BuildingPrototype("wall", 0.5, DARK_GREY, 100),
-    new BuildingPrototype("ballista", 0.4, BROWN, 10, 10)//, b=>b=="wall")
+    new BuildingPrototype("wall", loadImage("assets/wall_single_pixel.png"), 100),
+    new BuildingPrototype("archer", loadImage("assets/archer_single_pixel.png"), 10, 10)//, b=>b=="wall")
 ];
 
 var unitPrototypes = [
-    new UnitPrototype("swordsman", 0.3, LIGHT_GREY, 10, 2, 5)
+    new UnitPrototype("swordsman", loadImage("assets/swordsman_single_pixel.png"), 10, 2, 5)
 ]
 
 
@@ -352,9 +350,6 @@ function mousePlaceBuilding() {
     map.entities.push(new Building(proto, v));
     return true;
 }
-
-
-var wallImage = loadImage("assets/horizontal_wall.png");
 
 
 function draw() {
